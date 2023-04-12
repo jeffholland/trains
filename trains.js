@@ -1,7 +1,7 @@
 
 
 /********* 
- * clock *
+ * time *
  *********/ 
 
 const clockElement = document.getElementById("clock");
@@ -28,6 +28,8 @@ const setTime = () => {
 
 setTime();
 
+const events = []
+
 const updateTime = () => {
     timeSeconds += secondInterval;
 
@@ -50,8 +52,23 @@ const updateTime = () => {
         }
     }
 
+    checkForEvents();
+
     setTime();
     dayCountElement.innerHTML = dayCount;
+}
+
+const checkForEvents = () => {
+    for (let i = 0; i < events.length; i++) {
+        if (events[i]["days"] <= dayCount
+            && events[i]["hours"] <= timeHours
+            && events[i]["minutes"] <= timeMinutes
+            && events[i]["seconds"] <= timeSeconds)
+        {
+            events[i]["execute"]()
+            events.splice(i, 1);
+        }
+    }
 }
 
 let updateTimeIntervalId = setInterval(updateTime, 1000);
@@ -72,9 +89,6 @@ const setSpeed = (newSpeed) => {
         secondInterval = 1;
     }
 
-    console.log("frequency: " + frequency);
-    console.log("secondInterval: " + secondInterval);
-
     updateTimeIntervalId = setInterval(updateTime, frequency);
 
     speedElement.innerHTML = newSpeed;
@@ -85,10 +99,20 @@ speedSliderElement.oninput = function() {
 }
 
 
+/********* 
+ * money *
+ *********/ 
+
+let fundsAvailable = 20000;
+const fundsAvailableElement = document.getElementById("fundsAvailable")
+fundsAvailableElement.innerHTML = fundsAvailable;
+
 
 /*****************
  * city stations *
  *****************/
+
+const trainCostGrowthRatio = 1.6;
 
 const leftColumnElement = document.getElementById("left-column");
 
@@ -127,6 +151,7 @@ function createCity (city) {
     <div class="border-box">
         <h2>${city["name"]}</h2>
         <button id="${city["name"]}AddTrain">Add train</button>
+        <em>Cost: $<span id="${city["name"]}TrainCost"></span></em>
         <p>
             <button id="${city["name"]}SendTrain">Send train</button>
             <select id="${city["name"]}SelectStation"></select>
@@ -138,6 +163,11 @@ function createCity (city) {
 }
 
 const addTrain = (index) => {
+    fundsAvailable -= cities[index]["trainCost"];
+    fundsAvailableElement.innerHTML = fundsAvailable;
+    cities[index]["trainCost"] *= trainCostGrowthRatio;
+    cities[index]["trainCostElement"].innerHTML = cities[index]["trainCost"]
+
     cities[index]["numTrains"] += 1;
     cities[index]["numTrainsElement"].innerHTML = cities[index]["numTrains"]
 }
@@ -222,18 +252,24 @@ const sendTrain = (sourceIndex, destIndex) => {
         const distance = calculateDistance(sourceIndex, destIndex);
 
         const arrivalTime = calculateArrivalTime(distance);
-        console.log(arrivalTime)
 
-        const newParagraph = transitElement.appendChild(
-            document.createElement("p")
-        );
-        newParagraph.innerHTML = `
+        transitElement.innerHTML = `
             Sending train from ${source} on day ${dayCount} at ${getTimeFmtStr(timeHours, timeMinutes, timeSeconds)}<br/>
             Arriving in ${dest} on day ${arrivalTime[0]} at ${getTimeFmtStr(arrivalTime[1], arrivalTime[2], arrivalTime[3])}
         `;
 
-        cities[destIndex]["numTrains"] += 1;
-        cities[destIndex]["numTrainsElement"].innerHTML = cities[destIndex]["numTrains"]
+        events.push({
+            "days": arrivalTime[0],
+            "hours": arrivalTime[1],
+            "minutes": arrivalTime[2],
+            "seconds": arrivalTime[3],
+            "execute": function() {
+                cities[destIndex]["numTrains"] += 1;
+                cities[destIndex]["numTrainsElement"].innerHTML = cities[destIndex]["numTrains"]
+
+                transitElement.innerHTML = `A train from ${cities[sourceIndex]["name"]} has arrived in ${cities[destIndex]["name"]}`;
+            }
+        });
     } else {
         alert(`No trains available in ${source} to send`)
     }
@@ -250,6 +286,10 @@ for (let i = 0; i < cities.length; i++) {
     cities[i]["numTrains"] = 0;
     cities[i]["numTrainsElement"] = document.getElementById(cities[i]["name"] + "NumTrains");
     cities[i]["numTrainsElement"].innerHTML = cities[i]["numTrains"];
+
+    cities[i]["trainCost"] = 1000;
+    cities[i]["trainCostElement"] = document.getElementById(cities[i]["name"] + "TrainCost")
+    cities[i]["trainCostElement"].innerHTML = cities[i]["trainCost"];
 
     cities[i]["addTrainsElement"] = document.getElementById(cities[i]["name"] + "AddTrain");
     cities[i]["addTrainsElement"].addEventListener('click', function(){
