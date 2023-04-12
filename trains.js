@@ -87,9 +87,9 @@ const cities = [
         "y": 75
     },
     {
-        "name": "Los Angeles",
-        "x": 5,
-        "y": 10
+        "name": "Philadelphia",
+        "x": 85,
+        "y": 70
     },
     {
         "name": "Chicago",
@@ -102,31 +102,44 @@ const cities = [
         "y": 5
     },
     {
-        "name": "Philadelphia",
-        "x": 85,
-        "y": 70
+        "name": "Los Angeles",
+        "x": 5,
+        "y": 10
     }
 ];
 
 let text = "";
 
-function createCity (city, numTrains) {
-    city["numTrains"] = numTrains;
+function createCity (city) {
     return `
     <div class="border-box">
         <h2>${city["name"]}</h2>
-        <button id="addtrain">Add train</button>
+        <button id="${city["name"]}AddTrain">Add train</button>
         <p>
-            Trains: ${city["num_trains"]} 
-        </p>
-        <p>
-            Unscheduled trains: ${city["num_trains"]} 
+            Trains: <span id="${city["name"]}NumTrains"></span>
         </p>
     </div>`;
 }
 
+const addTrain = (index) => {
+    cities[index]["numTrains"] += 1;
+    cities[index]["numTrainsElement"].innerHTML = cities[index]["numTrains"]
+}
+
 for (let i = 0; i < cities.length; i++) {
+
     text += createCity(cities[i])
 }
 
 leftColumnElement.innerHTML = text;
+
+for (let i = 0; i < cities.length; i++) {
+    cities[i]["numTrains"] = 0;
+    cities[i]["numTrainsElement"] = document.getElementById(cities[i]["name"] + "NumTrains");
+    cities[i]["numTrainsElement"].innerHTML = cities[i]["numTrains"];
+
+    cities[i]["addTrainsElement"] = document.getElementById(cities[i]["name"] + "AddTrain");
+    cities[i]["addTrainsElement"].addEventListener('click', function(){
+        addTrain(i);
+    })
+}
