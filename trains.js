@@ -1,4 +1,8 @@
-/* clock */
+
+
+/********* 
+ * clock *
+ *********/ 
 
 const clockElement = document.getElementById("clock");
 const dayCountElement = document.getElementById("dayCount");
@@ -6,7 +10,7 @@ const dayCountElement = document.getElementById("dayCount");
 let timeSeconds = 0;
 let timeMinutes = 0;
 let timeHours = 0;
-let timeFmtStr;
+let timeFmtStr = "";
 
 let secondInterval = 1; // seconds that pass each time updateTime is called
 let frequency = 1000; // ms between each updateTime call
@@ -76,7 +80,11 @@ speedSliderElement.oninput = function() {
     setSpeed(this.value);
 }
 
-/* city stations */
+
+
+/*****************
+ * city stations *
+ *****************/
 
 const leftColumnElement = document.getElementById("left-column");
 
@@ -116,6 +124,10 @@ function createCity (city) {
         <h2>${city["name"]}</h2>
         <button id="${city["name"]}AddTrain">Add train</button>
         <p>
+            <button id="${city["name"]}SendTrain">Send train</button>
+            <select id="${city["name"]}SelectStation"></select>
+        </p>
+        <p>
             Trains: <span id="${city["name"]}NumTrains"></span>
         </p>
     </div>`;
@@ -126,13 +138,39 @@ const addTrain = (index) => {
     cities[index]["numTrainsElement"].innerHTML = cities[index]["numTrains"]
 }
 
-for (let i = 0; i < cities.length; i++) {
+transitElement = document.getElementById("transit");
 
-    text += createCity(cities[i])
+const sendTrain = (sourceIndex, destIndex) => {
+
+    const source = cities[sourceIndex]["name"];
+    const dest = cities[destIndex]["name"];
+
+    if (cities[sourceIndex]["numTrains"] > 0) {
+
+        cities[sourceIndex]["numTrains"] -= 1;
+        cities[sourceIndex]["numTrainsElement"].innerHTML = cities[sourceIndex]["numTrains"]
+        
+        console.log(`Sending train from ${source} to ${dest}`);
+
+        const newParagraph = transitElement.appendChild(
+            document.createElement("p")
+        );
+        newParagraph.innerHTML = `Sending train from ${source} to ${dest}`;
+
+        cities[destIndex]["numTrains"] += 1;
+        cities[destIndex]["numTrainsElement"].innerHTML = cities[destIndex]["numTrains"]
+    } else {
+        console.log(`No trains available in ${source} to send`)
+    }
 }
 
+// create cities
+for (let i = 0; i < cities.length; i++) {
+    text += createCity(cities[i])
+}
 leftColumnElement.innerHTML = text;
 
+// fill cities with info
 for (let i = 0; i < cities.length; i++) {
     cities[i]["numTrains"] = 0;
     cities[i]["numTrainsElement"] = document.getElementById(cities[i]["name"] + "NumTrains");
@@ -141,5 +179,28 @@ for (let i = 0; i < cities.length; i++) {
     cities[i]["addTrainsElement"] = document.getElementById(cities[i]["name"] + "AddTrain");
     cities[i]["addTrainsElement"].addEventListener('click', function(){
         addTrain(i);
+    })
+
+    cities[i]["selectStationElement"] = document.getElementById(cities[i]["name"] + "SelectStation");
+    for (let j = 0; j < cities.length; j++) {
+        // For each city that is not the current city
+        if (j != i) {
+            const stationOptionElement = cities[i]["selectStationElement"].appendChild(
+                document.createElement("option")
+            )
+            stationOptionElement.innerHTML = cities[j]["name"];
+        }
+    }
+
+    cities[i]["sendTrainsElement"] = document.getElementById(cities[i]["name"] + "SendTrain");
+
+    cities[i]["sendTrainsElement"].addEventListener('click', function() {
+        let destIndex = cities[i]["selectStationElement"].selectedIndex;
+
+        if (destIndex >= i) {
+            destIndex += 1; // offset by the source station
+        }
+
+        sendTrain(i, destIndex);
     })
 }
