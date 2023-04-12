@@ -17,8 +17,12 @@ let frequency = 1000; // ms between each updateTime call
 
 let dayCount = 0;
 
+const getTimeFmtStr = (hours, minutes, seconds) => {
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+}
+
 const setTime = () => {
-    timeFmtStr = `${timeHours.toString().padStart(2, '0')}:${timeMinutes.toString().padStart(2, '0')}:${timeSeconds.toString().padStart(2, '0')}` 
+    timeFmtStr = getTimeFmtStr(timeHours, timeMinutes, timeSeconds);
     clockElement.innerHTML = "Current time: " + timeFmtStr;
 }
 
@@ -138,6 +142,71 @@ const addTrain = (index) => {
     cities[index]["numTrainsElement"].innerHTML = cities[index]["numTrains"]
 }
 
+const calculateDistance = (sourceIndex, destIndex) => {
+    const sourceX = cities[sourceIndex]["x"];
+    const sourceY = cities[sourceIndex]["y"];
+    const destX = cities[destIndex]["x"];
+    const destY = cities[destIndex]["y"];
+
+    // Pythagorean theorem to get distance between cities
+    const distA = Math.abs(sourceX - destX);
+    const distB = Math.abs(sourceY - destY);
+    const distance = Math.pow(Math.pow(distA, 2) + Math.pow(distB, 2), 0.5)
+
+    return distance;
+}
+
+const calculateArrivalTime = (distance) => {
+    // Distance of 5 is equivalent to one hour
+    let distanceRemaining = distance;
+    let days = dayCount;
+    let hours = timeHours;
+    let minutes = timeMinutes;
+    let seconds = timeSeconds;
+
+    // hours
+    while (distanceRemaining >= 5) {
+        distanceRemaining -= 5;
+        hours += 1;
+    }
+    if (hours >= 24) {
+        hours -= 24;
+        days += 1;
+    }
+
+    // minutes
+    const distanceRemainingInMinutes = (distanceRemaining / 5) * 60;
+    const minutesAdded = Math.floor(distanceRemainingInMinutes);
+    minutes += minutesAdded;
+    if (minutes >= 60) {
+        minutes -= 60;
+        hours += 1;
+    }
+    if (hours >= 24) {
+        hours -= 24;
+        days += 1;
+    }
+
+    // seconds
+    const distanceRemainingInSeconds = (distanceRemainingInMinutes - minutesAdded) * 60;
+    const secondsAdded = Math.floor(distanceRemainingInSeconds);
+    seconds += secondsAdded;
+    if (seconds >= 60) {
+        seconds -= 60;
+        minutes += 1;
+    }
+    if (minutes >= 60) {
+        minutes -= 60;
+        hours += 1;
+    }
+    if (hours >= 24) {
+        hours -= 24;
+        days += 1;
+    }
+
+    return [days, hours, minutes, seconds]
+}
+
 transitElement = document.getElementById("transit");
 
 const sendTrain = (sourceIndex, destIndex) => {
@@ -150,17 +219,23 @@ const sendTrain = (sourceIndex, destIndex) => {
         cities[sourceIndex]["numTrains"] -= 1;
         cities[sourceIndex]["numTrainsElement"].innerHTML = cities[sourceIndex]["numTrains"]
         
-        console.log(`Sending train from ${source} to ${dest}`);
+        const distance = calculateDistance(sourceIndex, destIndex);
+
+        const arrivalTime = calculateArrivalTime(distance);
+        console.log(arrivalTime)
 
         const newParagraph = transitElement.appendChild(
             document.createElement("p")
         );
-        newParagraph.innerHTML = `Sending train from ${source} to ${dest}`;
+        newParagraph.innerHTML = `
+            Sending train from ${source} on day ${dayCount} at ${getTimeFmtStr(timeHours, timeMinutes, timeSeconds)}<br/>
+            Arriving in ${dest} on day ${arrivalTime[0]} at ${getTimeFmtStr(arrivalTime[1], arrivalTime[2], arrivalTime[3])}
+        `;
 
         cities[destIndex]["numTrains"] += 1;
         cities[destIndex]["numTrainsElement"].innerHTML = cities[destIndex]["numTrains"]
     } else {
-        console.log(`No trains available in ${source} to send`)
+        alert(`No trains available in ${source} to send`)
     }
 }
 
