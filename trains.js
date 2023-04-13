@@ -124,6 +124,8 @@ const addTrain = (index) => {
 
 // send train
 
+let tripStatusIdCounter = 0;
+
 const sendTrain = (sourceIndex, destIndex) => {
 
     const source = cities[sourceIndex]["name"];
@@ -144,10 +146,25 @@ const sendTrain = (sourceIndex, destIndex) => {
         );
         newChild.innerHTML = `
             <strong> ${source} -> ${dest} </strong><br/>
+            <strong> Status: </strong> <em><span id="tripStatus${tripStatusIdCounter}"> Awaiting departure</span></em><br/>
             <strong> Departure: </strong> day ${departureTime[0]} at ${getTimeFmtStr(departureTime[1], departureTime[2], departureTime[3])}<br/>
             <strong> Arrival: </strong> day ${arrivalTime[0]} at ${getTimeFmtStr(arrivalTime[1], arrivalTime[2], arrivalTime[3])}
         `;
+        const tripStatusElement = document.getElementById(`tripStatus${tripStatusIdCounter}`);
+        tripStatusIdCounter++;
 
+        // push departure event
+        events.push({
+            "days": departureTime[0],
+            "hours": departureTime[1],
+            "minutes": departureTime[2],
+            "seconds": departureTime[3],
+            "execute": function() {
+                tripStatusElement.innerHTML = "Departed"
+            }
+        })
+
+        // push arrival event
         events.push({
             "days": arrivalTime[0],
             "hours": arrivalTime[1],
@@ -157,9 +174,9 @@ const sendTrain = (sourceIndex, destIndex) => {
                 cities[destIndex]["numTrains"] += 1;
                 cities[destIndex]["numTrainsElement"].innerHTML = cities[destIndex]["numTrains"]
 
-                // Show message that train has arrived for 5 seconds
-                newChild.innerHTML = `
-                    <strong> ${source} -> ${dest} </strong><br/>Arrived`;
+                tripStatusElement.innerHTML = "Arrived"
+
+                // After arrival, remove event after timeout
                 setTimeout(() => {
                     transitElement.removeChild(newChild);
                 }, 4000);

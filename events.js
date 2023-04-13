@@ -4,8 +4,6 @@
 // where the first four are numbers and the last is a function
 // to execute at the specified time.
 
-// The execute function must remove itself from the events array.
-
 const events = []
 
 const checkForEvents = () => {
