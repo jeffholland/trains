@@ -5,12 +5,14 @@
 const clockElement = document.getElementById("clock");
 const dayCountElement = document.getElementById("dayCount");
 
-let timeSeconds = 0;
-let timeMinutes = 0;
 let timeHours = 0;
+let timeMinutes = 0;
+let timeSeconds = 0;
+let timeSecondsFloat = 0.0; // seconds is always floored to an int
+// we don't need greater precision than that
 
-let secondInterval = 1; // seconds that pass each time updateTime is called
-let frequency = 1000; // ms between each updateTime call
+const frequency = 5; // update time interval fixed to 5 ms
+let secondInterval = frequency / 1000; // seconds that pass each time updateTime is called
 
 let dayCount = 0;
 
@@ -20,35 +22,30 @@ const getTimeFmtStr = (hours, minutes, seconds) => {
 
 const setTime = () => {
     clockElement.innerHTML = "Current time: " + getTimeFmtStr(timeHours, timeMinutes, timeSeconds);
+    dayCountElement.innerHTML = dayCount;
 }
 setTime();
 
 const updateTime = () => {
-    timeSeconds += secondInterval;
+    timeSecondsFloat += secondInterval;
+    timeSeconds = Math.floor(timeSecondsFloat);
 
-    if (timeSeconds >= 60) {
-        while (timeSeconds >= 60) {
-            timeMinutes += 1;
-            timeSeconds = timeSeconds - 60;
-        }
+    while (timeSeconds >= 60) {
+        timeMinutes += 1;
+        timeSeconds -= 60;
+        timeSecondsFloat -= 60;
     }
-    if (timeMinutes >= 60) {
-        while (timeMinutes >= 60) {
-            timeHours += 1;
-            timeMinutes = timeMinutes - 60;
-        }
+    while (timeMinutes >= 60) {
+        timeHours += 1;
+        timeMinutes -= 60;
     }
-    if (timeHours >= 24) {
-        while (timeHours >= 24) {
-            dayCount += 1;
-            timeHours = timeHours - 24;
-        }
+    while (timeHours >= 24) {
+        dayCount += 1;
+        timeHours -= 24;
     }
 
     checkForEvents();
-
     setTime();
-    dayCountElement.innerHTML = dayCount;
 }
 
 /* clock speed */
@@ -57,21 +54,14 @@ const speedSliderElement = document.getElementById("speedSlider");
 const speedElement = document.getElementById("speed");
 
 const setSpeed = (newSpeed) => {
-    // 1 is normal, 2 is double, etc.
-    clearInterval(updateTimeIntervalId);
-
-    frequency = Math.floor(1000 / newSpeed);
-    if (newSpeed > 20) {
-        secondInterval = 1 + ((newSpeed - 20));
-    } else {
-        secondInterval = 1;
-    }
-
-    updateTimeIntervalId = setInterval(updateTime, frequency);
-
+    // Min speed is 1: 5 ms per 5 ms = 1 sec per sec
+    // Max speed is 100: 50 seconds per 5 ms = 10000 sec or 2.7 hours per sec
+    secondInterval = (frequency * Math.pow(newSpeed, 2)) / 1000;
     speedElement.innerHTML = newSpeed;
 }
 
 speedSliderElement.oninput = function() {
     setSpeed(this.value);
 }
+
+setInterval(updateTime, frequency)
