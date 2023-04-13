@@ -124,7 +124,7 @@ const addTrain = (index) => {
 
 // send train
 
-let tripStatusIdCounter = 0;
+let tripIdCounter = 0;
 
 const sendTrain = (sourceIndex, destIndex) => {
 
@@ -146,12 +146,30 @@ const sendTrain = (sourceIndex, destIndex) => {
         );
         newChild.innerHTML = `
             <strong> ${source} -> ${dest} </strong><br/>
-            <strong> Status: </strong> <em><span id="tripStatus${tripStatusIdCounter}"> Awaiting departure</span></em><br/>
+            <strong> Status: </strong> <em><span id="tripStatus${tripIdCounter}"> Awaiting departure</span></em><br/>
+            <strong> Passengers: </strong> <span id="passengers${tripIdCounter}">0</span>
             <strong> Departure: </strong> day ${departureTime[0]} at ${getTimeFmtStr(departureTime[1], departureTime[2], departureTime[3])}<br/>
             <strong> Arrival: </strong> day ${arrivalTime[0]} at ${getTimeFmtStr(arrivalTime[1], arrivalTime[2], arrivalTime[3])}
         `;
-        const tripStatusElement = document.getElementById(`tripStatus${tripStatusIdCounter}`);
-        tripStatusIdCounter++;
+        const tripStatusElement = document.getElementById(`tripStatus${tripIdCounter}`);
+        const passengersElement = document.getElementById(`passengers${tripIdCounter}`)
+
+        // push recurring event to add passengers
+        let passengers = 0;
+        let passengersFloat = 0.0;
+
+        recurringEvents.push({
+            "id": tripIdCounter,
+            "execute": function() {
+                // todo - encapsulate in a function
+                // and make it depend on source and dest city populations
+                // and other variables...
+                passengersFloat += Math.random() * secondInterval;
+                console.log(passengersFloat);
+                passengers = Math.floor(passengersFloat);
+                passengersElement.innerHTML = passengers;
+            }
+        })
 
         // push departure event
         events.push({
@@ -160,7 +178,8 @@ const sendTrain = (sourceIndex, destIndex) => {
             "minutes": departureTime[2],
             "seconds": departureTime[3],
             "execute": function() {
-                tripStatusElement.innerHTML = "Departed"
+                removeRecurringEvent(tripIdCounter);
+                tripStatusElement.innerHTML = "Departed";
             }
         })
 
@@ -186,6 +205,8 @@ const sendTrain = (sourceIndex, destIndex) => {
     } else {
         alert(`No trains available in ${source} to send`)
     }
+
+    tripIdCounter++;
 }
 
 

@@ -45,6 +45,7 @@ const updateTime = () => {
     }
 
     checkForEvents();
+    checkForRecurringEvents();
     setTime();
 }
 
