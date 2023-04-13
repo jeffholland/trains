@@ -163,7 +163,7 @@ const sendTrain = (sourceIndex, destIndex) => {
             "execute": function() {
                 // todo - encapsulate in a function
                 // and make it depend on source and dest city populations
-                // and other variables...
+                // and other variables...f
                 passengersFloat += Math.random() * secondInterval;
                 console.log(passengersFloat);
                 passengers = Math.floor(passengersFloat);
