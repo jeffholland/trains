@@ -1,46 +1,48 @@
-const leftColumnElement = document.getElementById("left-column");
 const trainCostGrowthRatio = 1.6;
 
-const addTrain = (index) => {
-    // Pay for the cost of the train
-    fundsAvailable -= cities[index]["trainCost"];
-    fundsAvailableElement.innerHTML = fundsAvailable;
+const transitElement = document.getElementById("transit");
 
-    // Cost of the train increases
-    cities[index]["trainCost"] *= trainCostGrowthRatio;
-    cities[index]["trainCostElement"].innerHTML = cities[index]["trainCost"]
 
-    // Add the train
-    cities[index]["numTrains"] += 1;
-    cities[index]["numTrainsElement"].innerHTML = cities[index]["numTrains"]
+
+// utilities
+
+const calculateDepartureTime = (departureTimeStr) => {
+    // Converts time string as returned by html input time element
+    // to 4-element array:
+    // [days, hours, minutes, seconds]
+
+    let days = dayCount;
+
+    let hours = parseInt(departureTimeStr.slice(0, 2));
+    let minutes = parseInt(departureTimeStr.slice(3, 5));
+
+    // Departure time can't be before current time,
+    // so if that's the case, assume next day departure
+    if (hours < timeHours
+        || (hours == timeHours && minutes <= timeMinutes)) {
+        days += 1;
+    }
+
+    let seconds = 0;
+
+    return [days, hours, minutes, seconds]
 }
 
-const calculateDistance = (sourceIndex, destIndex) => {
-    // Get x and y coordinates of both cities
-    const sourceX = cities[sourceIndex]["x"];
-    const sourceY = cities[sourceIndex]["y"];
-    const destX = cities[destIndex]["x"];
-    const destY = cities[destIndex]["y"];
+const calculateArrivalTime = (departureTime, distance) => {
+    // expects departure time as 4-element array:
+    // [days, hours, minutes, seconds]
 
-    // Pythagorean theorem to get distance between cities
-    const distA = Math.abs(sourceX - destX);
-    const distB = Math.abs(sourceY - destY);
-    const distance = Math.pow(Math.pow(distA, 2) + Math.pow(distB, 2), 0.5)
+    // distance of 5 is equivalent to one hour
 
-    return distance;
-}
-
-const calculateArrivalTime = (distance) => {
-    // Distance of 5 is equivalent to one hour
-    // Based on current time and distance,
-    // return 4-element array representing arrival time as:
+    // return arrival time as 4-element array:
     // [days, hours, minutes, seconds]
 
     let distanceRemaining = distance;
-    let days = dayCount;
-    let hours = timeHours;
-    let minutes = timeMinutes;
-    let seconds = timeSeconds;
+
+    let days = departureTime[0];
+    let hours = departureTime[1];
+    let minutes = departureTime[2];
+    let seconds = departureTime[3];
 
     // hours
     while (distanceRemaining >= 5) {
@@ -85,7 +87,42 @@ const calculateArrivalTime = (distance) => {
     return [days, hours, minutes, seconds]
 }
 
-transitElement = document.getElementById("transit");
+const calculateDistance = (sourceIndex, destIndex) => {
+    // Get x and y coordinates of both cities
+    const sourceX = cities[sourceIndex]["x"];
+    const sourceY = cities[sourceIndex]["y"];
+    const destX = cities[destIndex]["x"];
+    const destY = cities[destIndex]["y"];
+
+    // Pythagorean theorem to get distance between cities
+    const distA = Math.abs(sourceX - destX);
+    const distB = Math.abs(sourceY - destY);
+    const distance = Math.pow(Math.pow(distA, 2) + Math.pow(distB, 2), 0.5)
+
+    return distance;
+}
+
+
+
+// add train
+
+const addTrain = (index) => {
+    // Pay for the cost of the train
+    fundsAvailable -= cities[index]["trainCost"];
+    fundsAvailableElement.innerHTML = fundsAvailable;
+
+    // Cost of the train increases
+    cities[index]["trainCost"] *= trainCostGrowthRatio;
+    cities[index]["trainCostElement"].innerHTML = cities[index]["trainCost"]
+
+    // Add the train
+    cities[index]["numTrains"] += 1;
+    cities[index]["numTrainsElement"].innerHTML = cities[index]["numTrains"]
+}
+
+
+
+// send train
 
 const sendTrain = (sourceIndex, destIndex) => {
 
@@ -94,19 +131,20 @@ const sendTrain = (sourceIndex, destIndex) => {
 
     if (cities[sourceIndex]["numTrains"] > 0) {
 
+        const departureTimeStr = cities[sourceIndex]["sendTrainTimeElement"].value;
+        const departureTime = calculateDepartureTime(departureTimeStr);
+        const distance = calculateDistance(sourceIndex, destIndex);
+        const arrivalTime = calculateArrivalTime(departureTime, distance);
+
         cities[sourceIndex]["numTrains"] -= 1;
         cities[sourceIndex]["numTrainsElement"].innerHTML = cities[sourceIndex]["numTrains"]
-        
-        const distance = calculateDistance(sourceIndex, destIndex);
-
-        const arrivalTime = calculateArrivalTime(distance);
 
         const newChild = transitElement.appendChild(
             document.createElement("p")
         );
         newChild.innerHTML = `
             <strong> ${source} -> ${dest} </strong><br/>
-            <strong> Departure: </strong> day ${dayCount} at ${getTimeFmtStr(timeHours, timeMinutes, timeSeconds)}<br/>
+            <strong> Departure: </strong> day ${departureTime[0]} at ${getTimeFmtStr(departureTime[1], departureTime[2], departureTime[3])}<br/>
             <strong> Arrival: </strong> day ${arrivalTime[0]} at ${getTimeFmtStr(arrivalTime[1], arrivalTime[2], arrivalTime[3])}
         `;
 
@@ -133,30 +171,16 @@ const sendTrain = (sourceIndex, destIndex) => {
     }
 }
 
-// create cities
-let text = "";
+
+
+// add train functionality to cities
 
 for (let i = 0; i < cities.length; i++) {
-    text += createCity(cities[i])
-}
-leftColumnElement.innerHTML = text;
 
-// fill cities with info
-for (let i = 0; i < cities.length; i++) {
-    cities[i]["numTrains"] = 0;
-    cities[i]["numTrainsElement"] = document.getElementById(cities[i]["name"] + "NumTrains");
-    cities[i]["numTrainsElement"].innerHTML = cities[i]["numTrains"];
-
-    cities[i]["trainCost"] = 1000;
-    cities[i]["trainCostElement"] = document.getElementById(cities[i]["name"] + "TrainCost")
-    cities[i]["trainCostElement"].innerHTML = cities[i]["trainCost"];
-
-    cities[i]["addTrainsElement"] = document.getElementById(cities[i]["name"] + "AddTrain");
     cities[i]["addTrainsElement"].addEventListener('click', function(){
         addTrain(i);
     })
 
-    cities[i]["selectStationElement"] = document.getElementById(cities[i]["name"] + "SelectStation");
     for (let j = 0; j < cities.length; j++) {
         // For each city that is not the current city
         if (j != i) {
@@ -166,8 +190,6 @@ for (let i = 0; i < cities.length; i++) {
             stationOptionElement.innerHTML = cities[j]["name"];
         }
     }
-
-    cities[i]["sendTrainsElement"] = document.getElementById(cities[i]["name"] + "SendTrain");
 
     cities[i]["sendTrainsElement"].addEventListener('click', function() {
         let destIndex = cities[i]["selectStationElement"].selectedIndex;

@@ -1,3 +1,5 @@
+const leftColumnElement = document.getElementById("left-column");
+
 const cities = [
     {
         "name": "New York",
@@ -36,14 +38,54 @@ const createCity = (city) => {
     return `
     <div class="border-box">
         <h2>${city["name"]}</h2>
-        <button id="${city["name"]}AddTrain">Add train</button>
-        <em>Cost: $<span id="${city["name"]}TrainCost"></span></em>
+        <p>
+            <button id="${city["name"]}AddTrain">Add train</button>
+            <em>Cost: $<span id="${city["name"]}TrainCost"></span></em>
+        </p>
+        <p>
+            <em>Population: <span id="${city["name"]}Population"></span></em>
+        </p>
         <p>
             <button id="${city["name"]}SendTrain">Send train</button>
             <select id="${city["name"]}SelectStation"></select>
+            <input id="${city["name"]}SendTrainTime" type="time" value="00:00" />
         </p>
         <p>
             Trains: <span id="${city["name"]}NumTrains"></span>
         </p>
     </div>`;
+}
+
+
+
+// create cities
+let text = "";
+
+for (let i = 0; i < cities.length; i++) {
+    text += createCity(cities[i])
+}
+leftColumnElement.innerHTML = text;
+
+
+
+// fill cities with info
+
+for (let i = 0; i < cities.length; i++) {
+
+    cities[i]["trainCost"] = 1000;
+    cities[i]["trainCostElement"] = document.getElementById(cities[i]["name"] + "TrainCost")
+    cities[i]["trainCostElement"].innerHTML = cities[i]["trainCost"];
+
+    cities[i]["populationElement"] = document.getElementById(cities[i]["name"] + "Population")
+    cities[i]["populationElement"].innerHTML = cities[i]["population"];
+
+    cities[i]["addTrainsElement"] = document.getElementById(cities[i]["name"] + "AddTrain");
+
+    cities[i]["sendTrainsElement"] = document.getElementById(cities[i]["name"] + "SendTrain");
+    cities[i]["selectStationElement"] = document.getElementById(cities[i]["name"] + "SelectStation");
+    cities[i]["sendTrainTimeElement"] = document.getElementById(cities[i]["name"] + "SendTrainTime");
+
+    cities[i]["numTrains"] = 0;
+    cities[i]["numTrainsElement"] = document.getElementById(cities[i]["name"] + "NumTrains");
+    cities[i]["numTrainsElement"].innerHTML = cities[i]["numTrains"];
 }
