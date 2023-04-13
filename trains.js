@@ -1,178 +1,22 @@
-
-
-/********* 
- * time *
- *********/ 
-
-const clockElement = document.getElementById("clock");
-const dayCountElement = document.getElementById("dayCount");
-
-let timeSeconds = 0;
-let timeMinutes = 0;
-let timeHours = 0;
-let timeFmtStr = "";
-
-let secondInterval = 1; // seconds that pass each time updateTime is called
-let frequency = 1000; // ms between each updateTime call
-
-let dayCount = 0;
-
-const getTimeFmtStr = (hours, minutes, seconds) => {
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-}
-
-const setTime = () => {
-    timeFmtStr = getTimeFmtStr(timeHours, timeMinutes, timeSeconds);
-    clockElement.innerHTML = "Current time: " + timeFmtStr;
-}
-
-setTime();
-
-const events = []
-
-const updateTime = () => {
-    timeSeconds += secondInterval;
-
-    if (timeSeconds >= 60) {
-        while (timeSeconds >= 60) {
-            timeMinutes += 1;
-            timeSeconds = timeSeconds - 60;
-        }
-    }
-    if (timeMinutes >= 60) {
-        while (timeMinutes >= 60) {
-            timeHours += 1;
-            timeMinutes = timeMinutes - 60;
-        }
-    }
-    if (timeHours >= 24) {
-        while (timeHours >= 24) {
-            dayCount += 1;
-            timeHours = timeHours - 24;
-        }
-    }
-
-    checkForEvents();
-
-    setTime();
-    dayCountElement.innerHTML = dayCount;
-}
-
-const checkForEvents = () => {
-    for (let i = 0; i < events.length; i++) {
-        if (events[i]["days"] <= dayCount
-            && events[i]["hours"] <= timeHours
-            && events[i]["minutes"] <= timeMinutes
-            && events[i]["seconds"] <= timeSeconds)
-        {
-            events[i]["execute"]()
-            events.splice(i, 1);
-        }
-    }
-}
-
-let updateTimeIntervalId = setInterval(updateTime, 1000);
-
-/* clock speed */
-
-const speedSliderElement = document.getElementById("speedSlider");
-const speedElement = document.getElementById("speed");
-
-const setSpeed = (newSpeed) => {
-    // 1 is normal, 2 is double, etc.
-    clearInterval(updateTimeIntervalId);
-
-    frequency = Math.floor(1000 / newSpeed);
-    if (newSpeed > 20) {
-        secondInterval = 1 + ((newSpeed - 20));
-    } else {
-        secondInterval = 1;
-    }
-
-    updateTimeIntervalId = setInterval(updateTime, frequency);
-
-    speedElement.innerHTML = newSpeed;
-}
-
-speedSliderElement.oninput = function() {
-    setSpeed(this.value);
-}
-
-
-/********* 
- * money *
- *********/ 
-
-let fundsAvailable = 20000;
-const fundsAvailableElement = document.getElementById("fundsAvailable")
-fundsAvailableElement.innerHTML = fundsAvailable;
-
-
-/*****************
- * city stations *
- *****************/
-
+const leftColumnElement = document.getElementById("left-column");
 const trainCostGrowthRatio = 1.6;
 
-const leftColumnElement = document.getElementById("left-column");
-
-const cities = [
-    {
-        "name": "New York",
-        "x": 90,
-        "y": 75
-    },
-    {
-        "name": "Philadelphia",
-        "x": 85,
-        "y": 70
-    },
-    {
-        "name": "Chicago",
-        "x": 70,
-        "y": 80
-    },
-    {
-        "name": "Houston",
-        "x": 50,
-        "y": 5
-    },
-    {
-        "name": "Los Angeles",
-        "x": 5,
-        "y": 10
-    }
-];
-
-let text = "";
-
-function createCity (city) {
-    return `
-    <div class="border-box">
-        <h2>${city["name"]}</h2>
-        <button id="${city["name"]}AddTrain">Add train</button>
-        <em>Cost: $<span id="${city["name"]}TrainCost"></span></em>
-        <p>
-            <button id="${city["name"]}SendTrain">Send train</button>
-            <select id="${city["name"]}SelectStation"></select>
-        </p>
-        <p>
-            Trains: <span id="${city["name"]}NumTrains"></span>
-        </p>
-    </div>`;
-}
-
 const addTrain = (index) => {
+    // Pay for the cost of the train
     fundsAvailable -= cities[index]["trainCost"];
     fundsAvailableElement.innerHTML = fundsAvailable;
+
+    // Cost of the train increases
     cities[index]["trainCost"] *= trainCostGrowthRatio;
     cities[index]["trainCostElement"].innerHTML = cities[index]["trainCost"]
 
+    // Add the train
     cities[index]["numTrains"] += 1;
     cities[index]["numTrainsElement"].innerHTML = cities[index]["numTrains"]
 }
 
 const calculateDistance = (sourceIndex, destIndex) => {
+    // Get x and y coordinates of both cities
     const sourceX = cities[sourceIndex]["x"];
     const sourceY = cities[sourceIndex]["y"];
     const destX = cities[destIndex]["x"];
@@ -188,6 +32,10 @@ const calculateDistance = (sourceIndex, destIndex) => {
 
 const calculateArrivalTime = (distance) => {
     // Distance of 5 is equivalent to one hour
+    // Based on current time and distance,
+    // return 4-element array representing arrival time as:
+    // [days, hours, minutes, seconds]
+
     let distanceRemaining = distance;
     let days = dayCount;
     let hours = timeHours;
@@ -199,7 +47,7 @@ const calculateArrivalTime = (distance) => {
         distanceRemaining -= 5;
         hours += 1;
     }
-    if (hours >= 24) {
+    while (hours >= 24) {
         hours -= 24;
         days += 1;
     }
@@ -208,11 +56,11 @@ const calculateArrivalTime = (distance) => {
     const distanceRemainingInMinutes = (distanceRemaining / 5) * 60;
     const minutesAdded = Math.floor(distanceRemainingInMinutes);
     minutes += minutesAdded;
-    if (minutes >= 60) {
+    while (minutes >= 60) {
         minutes -= 60;
         hours += 1;
     }
-    if (hours >= 24) {
+    while (hours >= 24) {
         hours -= 24;
         days += 1;
     }
@@ -221,15 +69,15 @@ const calculateArrivalTime = (distance) => {
     const distanceRemainingInSeconds = (distanceRemainingInMinutes - minutesAdded) * 60;
     const secondsAdded = Math.floor(distanceRemainingInSeconds);
     seconds += secondsAdded;
-    if (seconds >= 60) {
+    while (seconds >= 60) {
         seconds -= 60;
         minutes += 1;
     }
-    if (minutes >= 60) {
+    while (minutes >= 60) {
         minutes -= 60;
         hours += 1;
     }
-    if (hours >= 24) {
+    while (hours >= 24) {
         hours -= 24;
         days += 1;
     }
@@ -253,9 +101,13 @@ const sendTrain = (sourceIndex, destIndex) => {
 
         const arrivalTime = calculateArrivalTime(distance);
 
-        transitElement.innerHTML = `
-            Sending train from ${source} on day ${dayCount} at ${getTimeFmtStr(timeHours, timeMinutes, timeSeconds)}<br/>
-            Arriving in ${dest} on day ${arrivalTime[0]} at ${getTimeFmtStr(arrivalTime[1], arrivalTime[2], arrivalTime[3])}
+        const newChild = transitElement.appendChild(
+            document.createElement("p")
+        );
+        newChild.innerHTML = `
+            <strong> ${source} -> ${dest} </strong><br/>
+            <strong> Departure: </strong> day ${dayCount} at ${getTimeFmtStr(timeHours, timeMinutes, timeSeconds)}<br/>
+            <strong> Arrival: </strong> day ${arrivalTime[0]} at ${getTimeFmtStr(arrivalTime[1], arrivalTime[2], arrivalTime[3])}
         `;
 
         events.push({
@@ -267,15 +119,23 @@ const sendTrain = (sourceIndex, destIndex) => {
                 cities[destIndex]["numTrains"] += 1;
                 cities[destIndex]["numTrainsElement"].innerHTML = cities[destIndex]["numTrains"]
 
-                transitElement.innerHTML = `A train from ${cities[sourceIndex]["name"]} has arrived in ${cities[destIndex]["name"]}`;
+                // Show message that train has arrived for 5 seconds
+                newChild.innerHTML = `
+                    <strong> ${source} -> ${dest} </strong><br/>Arrived`;
+                setTimeout(() => {
+                    transitElement.removeChild(newChild);
+                }, 4000);
             }
         });
+
     } else {
         alert(`No trains available in ${source} to send`)
     }
 }
 
 // create cities
+let text = "";
+
 for (let i = 0; i < cities.length; i++) {
     text += createCity(cities[i])
 }
