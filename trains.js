@@ -128,6 +128,8 @@ let tripIdCounter = 0;
 
 const sendTrain = (sourceIndex, destIndex) => {
 
+    tripIdCounter++;
+
     const source = cities[sourceIndex]["name"];
     const dest = cities[destIndex]["name"];
 
@@ -147,7 +149,7 @@ const sendTrain = (sourceIndex, destIndex) => {
         newChild.innerHTML = `
             <strong> ${source} -> ${dest} </strong><br/>
             <strong> Status: </strong> <em><span id="tripStatus${tripIdCounter}"> Awaiting departure</span></em><br/>
-            <strong> Passengers: </strong> <span id="passengers${tripIdCounter}">0</span>
+            <strong> Passengers: </strong> <span id="passengers${tripIdCounter}">0</span><br/>
             <strong> Departure: </strong> day ${departureTime[0]} at ${getTimeFmtStr(departureTime[1], departureTime[2], departureTime[3])}<br/>
             <strong> Arrival: </strong> day ${arrivalTime[0]} at ${getTimeFmtStr(arrivalTime[1], arrivalTime[2], arrivalTime[3])}
         `;
@@ -161,11 +163,7 @@ const sendTrain = (sourceIndex, destIndex) => {
         recurringEvents.push({
             "id": tripIdCounter,
             "execute": function() {
-                // todo - encapsulate in a function
-                // and make it depend on source and dest city populations
-                // and other variables...f
-                passengersFloat += Math.random() * secondInterval;
-                console.log(passengersFloat);
+                passengersFloat += getPassengerIncrement(sourceIndex, destIndex);
                 passengers = Math.floor(passengersFloat);
                 passengersElement.innerHTML = passengers;
             }
@@ -177,8 +175,9 @@ const sendTrain = (sourceIndex, destIndex) => {
             "hours": departureTime[1],
             "minutes": departureTime[2],
             "seconds": departureTime[3],
+            "id": tripIdCounter,
             "execute": function() {
-                removeRecurringEvent(tripIdCounter);
+                removeRecurringEvent(this["id"]);
                 tripStatusElement.innerHTML = "Departed";
             }
         })
@@ -205,8 +204,6 @@ const sendTrain = (sourceIndex, destIndex) => {
     } else {
         alert(`No trains available in ${source} to send`)
     }
-
-    tripIdCounter++;
 }
 
 
