@@ -51,6 +51,11 @@ const createCity = (city) => {
             <input id="${city["name"]}SendTrainTime" type="time" value="00:00" />
         </p>
         <p>
+            Ticket price: $<span id="${city["name"]}TicketPrice">5</span>
+            <button id="${city["name"]}IncreaseTicketPrice">+</button>
+            <button id="${city["name"]}DecreaseTicketPrice">-</button>
+        </p>
+        <p>
             Trains: <span id="${city["name"]}NumTrains"></span>
         </p>
     </div>`;
@@ -84,6 +89,20 @@ for (let i = 0; i < cities.length; i++) {
     cities[i]["sendTrainsElement"] = document.getElementById(cities[i]["name"] + "SendTrain");
     cities[i]["selectStationElement"] = document.getElementById(cities[i]["name"] + "SelectStation");
     cities[i]["sendTrainTimeElement"] = document.getElementById(cities[i]["name"] + "SendTrainTime");
+
+    cities[i]["ticketPrice"] = 5;
+    cities[i]["ticketPriceElement"] = document.getElementById(cities[i]["name"] + "TicketPrice");
+    cities[i]["increaseTicketPriceElement"] = document.getElementById(cities[i]["name"] + "IncreaseTicketPrice");
+    cities[i]["decreaseTicketPriceElement"] = document.getElementById(cities[i]["name"] + "DecreaseTicketPrice");
+
+    cities[i]["increaseTicketPriceElement"].onclick = function() {
+        cities[i]["ticketPrice"]++;
+        cities[i]["ticketPriceElement"].innerHTML = cities[i]["ticketPrice"];
+    }
+    cities[i]["decreaseTicketPriceElement"].onclick = function() {
+        cities[i]["ticketPrice"]--;
+        cities[i]["ticketPriceElement"].innerHTML = cities[i]["ticketPrice"];
+    }
 
     cities[i]["numTrains"] = 0;
     cities[i]["numTrainsElement"] = document.getElementById(cities[i]["name"] + "NumTrains");

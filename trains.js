@@ -108,8 +108,7 @@ const calculateDistance = (sourceIndex, destIndex) => {
 
 const addTrain = (index) => {
     // Pay for the cost of the train
-    fundsAvailable -= cities[index]["trainCost"];
-    fundsAvailableElement.innerHTML = fundsAvailable;
+    subtractMoney(cities[index]["trainCost"]);
 
     // Cost of the train increases
     cities[index]["trainCost"] *= trainCostGrowthRatio;
@@ -163,9 +162,19 @@ const sendTrain = (sourceIndex, destIndex) => {
         recurringEvents.push({
             "id": tripIdCounter,
             "execute": function() {
+                // the function called below determines how much closer we are to a 
+                // passenger "buying a ticket" for this train
                 passengersFloat += getPassengerIncrement(sourceIndex, destIndex);
-                passengers = Math.floor(passengersFloat);
-                passengersElement.innerHTML = passengers;
+                const passengerChange = passengersFloat - passengers;
+
+                // if we're adding a passenger,
+                // then they've "bought a ticket", so we get money
+                if (passengerChange >= 1) {
+                    passengers = Math.floor(passengersFloat);
+                    passengersElement.innerHTML = passengers;
+
+                    addMoney(cities[sourceIndex]["ticketPrice"]);
+                }
             }
         })
 
