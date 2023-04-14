@@ -1,4 +1,7 @@
 const trainCostGrowthRatio = 1.6;
+let trainCapacity = 200;
+const trainCapacityElement = document.getElementById("trainCapacity");
+trainCapacityElement.innerHTML = trainCapacity;
 
 const transitElement = document.getElementById("transit");
 
@@ -162,18 +165,25 @@ const sendTrain = (sourceIndex, destIndex) => {
         recurringEvents.push({
             "id": tripIdCounter,
             "execute": function() {
-                // the function called below determines how much closer we are to a 
-                // passenger "buying a ticket" for this train
-                passengersFloat += getPassengerIncrement(sourceIndex, destIndex);
-                const passengerChange = passengersFloat - passengers;
-
-                // if we're adding a passenger,
-                // then they've "bought a ticket", so we get money
-                if (passengerChange >= 1) {
-                    passengers = Math.floor(passengersFloat);
-                    passengersElement.innerHTML = passengers;
-
-                    addMoney(cities[sourceIndex]["ticketPrice"]);
+                // if train is at capacity, this function does nothing
+                if (passengers < trainCapacity) {
+                    // the function called below determines how much closer we are to a 
+                    // passenger "buying a ticket" for this train
+                    passengersFloat += getPassengerIncrement(sourceIndex, destIndex);
+                    const passengerChange = passengersFloat - passengers;
+    
+                    // if we're adding a passenger,
+                    // then they've "bought a ticket", so we get money
+                    if (passengerChange >= 1) {
+                        passengers = Math.floor(passengersFloat);
+                        passengersElement.innerHTML = passengers;
+    
+                        addMoney(cities[sourceIndex]["ticketPrice"]);
+                    }
+                } else {
+                    if (tripStatusElement.innerHTML != "Capacity reached - Awaiting departure") {
+                        tripStatusElement.innerHTML = "Capacity reached - Awaiting departure";
+                    }
                 }
             }
         })

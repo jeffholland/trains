@@ -56,6 +56,9 @@ const createCity = (city) => {
             <button id="${city["name"]}DecreaseTicketPrice">-</button>
         </p>
         <p>
+            Demand: <span id="${city["name"]}Demand">100</span>%
+        </p>
+        <p>
             Trains: <span id="${city["name"]}NumTrains"></span>
         </p>
     </div>`;
@@ -95,13 +98,20 @@ for (let i = 0; i < cities.length; i++) {
     cities[i]["increaseTicketPriceElement"] = document.getElementById(cities[i]["name"] + "IncreaseTicketPrice");
     cities[i]["decreaseTicketPriceElement"] = document.getElementById(cities[i]["name"] + "DecreaseTicketPrice");
 
+    cities[i]["demand"] = 100;
+    cities[i]["demandElement"] = document.getElementById(cities[i]["name"] + "Demand");
+
     cities[i]["increaseTicketPriceElement"].onclick = function() {
         cities[i]["ticketPrice"]++;
         cities[i]["ticketPriceElement"].innerHTML = cities[i]["ticketPrice"];
+        cities[i]["demand"] = calculateDemand(cities[i]["ticketPrice"]);
+        cities[i]["demandElement"].innerHTML = cities[i]["demand"];
     }
     cities[i]["decreaseTicketPriceElement"].onclick = function() {
         cities[i]["ticketPrice"]--;
         cities[i]["ticketPriceElement"].innerHTML = cities[i]["ticketPrice"];
+        cities[i]["demand"] = calculateDemand(cities[i]["ticketPrice"]);
+        cities[i]["demandElement"].innerHTML = cities[i]["demand"];
     }
 
     cities[i]["numTrains"] = 0;
