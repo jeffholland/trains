@@ -40,10 +40,10 @@ const createCity = (city) => {
         <h2>${city["name"]}</h2>
         <p>
             <button id="${city["name"]}AddTrain">Add train</button>
-            <em>Cost: $<span id="${city["name"]}TrainCost"></span></em>
+            <em><strong>Cost:</strong> $<span id="${city["name"]}TrainCost"></span></em>
         </p>
         <p>
-            <em>Population: <span id="${city["name"]}Population"></span></em>
+            <em><strong>Population:</strong> <span id="${city["name"]}Population"></span></em>
         </p>
         <p>
             <button id="${city["name"]}SendTrain">Send train</button>
@@ -51,15 +51,15 @@ const createCity = (city) => {
             <input id="${city["name"]}SendTrainTime" type="time" value="00:00" />
         </p>
         <p>
-            Ticket price: $<span id="${city["name"]}TicketPrice">5</span>
+            <strong>Ticket price:</strong> $<span id="${city["name"]}TicketPrice">5</span>
             <button id="${city["name"]}IncreaseTicketPrice">+</button>
             <button id="${city["name"]}DecreaseTicketPrice">-</button>
         </p>
         <p>
-            Demand: <span id="${city["name"]}Demand">100</span>%
+            <strong>Demand:</strong> <span id="${city["name"]}Demand">100</span>%
         </p>
         <p>
-            Trains: <span id="${city["name"]}NumTrains"></span>
+            <strong>Trains:</strong> <span id="${city["name"]}NumTrains"></span>
         </p>
     </div>`;
 }

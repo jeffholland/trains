@@ -21,7 +21,7 @@ const getTimeFmtStr = (hours, minutes, seconds) => {
 }
 
 const setTime = () => {
-    clockElement.innerHTML = "Current time: " + getTimeFmtStr(timeHours, timeMinutes, timeSeconds);
+    clockElement.innerHTML = "<strong>Current time:</strong> " + getTimeFmtStr(timeHours, timeMinutes, timeSeconds);
     dayCountElement.innerHTML = dayCount;
 }
 setTime();
