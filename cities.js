@@ -24,7 +24,7 @@ const cities = [
         "x": 81,
         "y": 91,
         "population": 276807
-    }
+    },
     {
         "name": "Baltimore",
         "x": 83,
@@ -72,7 +72,7 @@ const cities = [
         "x": 80,
         "y": 75,
         "population": 300431
-    }
+    },
     {
         "name": "Cleveland",
         "x": 78,
@@ -138,7 +138,7 @@ const cities = [
         "x": 60,
         "y": 66,
         "population": 293310
-    }
+    },
     {
         "name": "Kansas City",
         "x": 56,
@@ -348,10 +348,12 @@ for (let i = 0; i < cities.length; i++) {
         cities[i]["demandElement"].innerHTML = cities[i]["demand"];
     }
     cities[i]["decreaseTicketPriceElement"].onclick = function() {
-        cities[i]["ticketPrice"]--;
-        cities[i]["ticketPriceElement"].innerHTML = cities[i]["ticketPrice"];
-        cities[i]["demand"] = calculateDemand(cities[i]["ticketPrice"]);
-        cities[i]["demandElement"].innerHTML = cities[i]["demand"];
+        if (cities[i]["ticketPrice"] > 1) {
+            cities[i]["ticketPrice"]--;
+            cities[i]["ticketPriceElement"].innerHTML = cities[i]["ticketPrice"];
+            cities[i]["demand"] = calculateDemand(cities[i]["ticketPrice"]);
+            cities[i]["demandElement"].innerHTML = cities[i]["demand"];
+        }
     }
 
     cities[i]["numTrains"] = 0;
