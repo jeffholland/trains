@@ -8,3 +8,15 @@
     float: left;
     width: 25%;
 }
+
+#upper-left {
+    float: left;
+    width: 25%;
+}
+#upper-right {
+    float: left;
+    width: 50%;
+}
+#left-column {
+    clear: left;
+}
