@@ -20,3 +20,10 @@
 #left-column {
     clear: left;
 }
+
+.city {
+    visibility:hidden;
+}
+#transit {
+    visibility:hidden;
+}
