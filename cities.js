@@ -14,18 +14,6 @@ const cities = [
         "population": 1600000
     },
     {
-        "name": "Charlotte",
-        "x": 78,
-        "y": 35,
-        "population": 879700
-    },
-    {
-        "name": "Jacksonville",
-        "x": 75,
-        "y": 11,
-        "population": 954600
-    },
-    {
         "name": "Columbus",
         "x": 75,
         "y": 70,
@@ -42,6 +30,18 @@ const cities = [
         "x": 65,
         "y": 80,
         "population": 2750000
+    },
+    {
+        "name": "Charlotte",
+        "x": 78,
+        "y": 35,
+        "population": 879700
+    },
+    {
+        "name": "Jacksonville",
+        "x": 75,
+        "y": 11,
+        "population": 954600
     },
     {
         "name": "Denver",
