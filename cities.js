@@ -14,22 +14,105 @@ const cities = [
         "population": 1600000
     },
     {
-        "name": "Chicago",
+        "name": "Charlotte",
+        "x": 78,
+        "y": 35,
+        "population": 879700
+    },
+    {
+        "name": "Jacksonville",
+        "x": 75,
+        "y": 11,
+        "population": 954600
+    },
+    {
+        "name": "Columbus",
+        "x": 75,
+        "y": 70,
+        "population": 906500
+    },
+    {
+        "name": "Indianapolis",
         "x": 70,
+        "y": 68,
+        "population": 882000
+    },
+    {
+        "name": "Chicago",
+        "x": 65,
         "y": 80,
         "population": 2750000
     },
     {
+        "name": "Denver",
+        "x": 30,
+        "y": 60,
+        "population": 711500
+    },
+    {
+        "name": "Oklahoma City",
+        "x": 52,
+        "y": 30
+    },
+    {
+        "name": "Dallas",
+        "x": 52,
+        "y": 16,
+        "population": 1288000
+    },
+    {
         "name": "Houston",
-        "x": 50,
-        "y": 5,
+        "x": 55,
+        "y": 11,
         "population": 2300000
+    },
+    {
+        "name": "San Antonio",
+        "x": 50,
+        "y": 10,
+        "population": 1450000
+    },
+    {
+        "name": "Austin",
+        "x": 51,
+        "y": 12,
+        "population": 964200
+    },
+    {
+        "name": "Phoenix",
+        "x": 15,
+        "y": 10,
+        "population": 1625000
+    },
+    {
+        "name": "San Diego",
+        "x": 6,
+        "y": 12,
+        "population": 1382000
     },
     {
         "name": "Los Angeles",
         "x": 5,
-        "y": 10,
+        "y": 15,
         "population": 3900000
+    },
+    {
+        "name": "San Jose",
+        "x": 1,
+        "y": 36,
+        "population": 983500
+    },
+    {
+        "name": "San Francisco",
+        "x": 0,
+        "y": 40,
+        "population": 815200
+    },
+    {
+        "name": "Seattle",
+        "x": 2,
+        "y": 100,
+        "population": 733900
     }
 ];
 
@@ -41,9 +124,6 @@ const createCity = (city) => {
         <p>
             <button id="${city["name"]}AddTrain">Add train</button>
             <em><strong>Cost:</strong> $<span id="${city["name"]}TrainCost"></span></em>
-        </p>
-        <p>
-            <em><strong>Population:</strong> <span id="${city["name"]}Population"></span></em>
         </p>
         <p>
             <button id="${city["name"]}SendTrain">Send train</button>
@@ -83,9 +163,6 @@ for (let i = 0; i < cities.length; i++) {
     cities[i]["trainCost"] = 1000;
     cities[i]["trainCostElement"] = document.getElementById(cities[i]["name"] + "TrainCost")
     cities[i]["trainCostElement"].innerHTML = cities[i]["trainCost"];
-
-    cities[i]["populationElement"] = document.getElementById(cities[i]["name"] + "Population")
-    cities[i]["populationElement"].innerHTML = cities[i]["population"];
 
     cities[i]["addTrainsElement"] = document.getElementById(cities[i]["name"] + "AddTrain");
 
