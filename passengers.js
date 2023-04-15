@@ -1,6 +1,6 @@
 // for debugging, so we don't overwhelmed with console.logs
 let debugInc = 0;
-const debugLimit = 100;
+const debugLimit = 200;
 
 const getPassengerIncrement = (sourceIndex, destIndex) => {
     // todo - make it depend on source and dest city populations
@@ -12,14 +12,16 @@ const getPassengerIncrement = (sourceIndex, destIndex) => {
 
     increment += sourcePopInc * Math.random();
     increment += destPopInc * Math.random();
-
-    increment *= cities[sourceIndex]["demand"];
+    increment *= (cities[sourceIndex]["demand"] / 500);
 
     increment *= secondInterval;
     
     // for debugging, so we don't overwhelmed with console.logs
     debugInc++;
     if (debugInc >= debugLimit) {
+        console.log(`sourcePopInc: ${sourcePopInc * Math.random()}`);
+        console.log(`destPopInc: ${destPopInc * Math.random()}`);
+        console.log(`demand: ${cities[sourceIndex]["demand"]}`);
         console.log(`increment: ${increment}`);
         debugInc = 0;
     }
