@@ -15,7 +15,7 @@
 }
 #upper-right {
     float: left;
-    width: 50%;
+    width: 25%;
 }
 #left-column {
     clear: left;
@@ -24,6 +24,6 @@
 .city {
     visibility:hidden;
 }
-#transit {
+#transitBox {
     visibility:hidden;
 }

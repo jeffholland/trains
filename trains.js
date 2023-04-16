@@ -111,7 +111,12 @@ const calculateDistance = (sourceIndex, destIndex) => {
 
 const addTrain = (index) => {
     // Pay for the cost of the train
-    subtractMoney(cities[index]["trainCost"]);
+    try {
+        subtractMoney(cities[index]["trainCost"]);
+    } catch (e) {
+        console.error(e);
+        return;
+    }
 
     // Cost of the train increases
     cities[index]["trainCost"] *= trainCostGrowthRatio;
@@ -131,6 +136,9 @@ let tripIdCounter = 0;
 const sendTrain = (sourceIndex, destIndex) => {
 
     tripIdCounter++;
+
+    const transitBoxElement = document.getElementById("transitBox");
+    transitBoxElement.style.visibility = "visible";
 
     const source = cities[sourceIndex]["name"];
     const dest = cities[destIndex]["name"];
@@ -216,6 +224,9 @@ const sendTrain = (sourceIndex, destIndex) => {
                 // After arrival, remove event after timeout
                 setTimeout(() => {
                     transitElement.removeChild(newChild);
+                    if (transitElement.children.length == 0) {
+                        transitBoxElement.style.visibility = "hidden";
+                    }
                 }, 4000);
             }
         });

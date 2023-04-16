@@ -18,13 +18,20 @@
                 </p>
             </div>
             <div class="border-box" id="upper-right">
-                <h2>More stuff goes here</h2>
+                <h2>Build a train station</h2>
+                <p>
+                    Next city that needs a station: <strong><span id="nextCityName"></span></strong>
+                </p>
+                <p>
+                    <em>Cost: </em> <strong>$<span id="nextCityCost"></span></strong> 
+                    <button id="addNextCity">Build</button>
+                </p>
             </div>
         </div>
         <div class="column" id="left-column">
         </div>
         <div class="column" id="middle-column">
-            <div class="border-box" id="transit">
+            <div class="border-box" id="transitBox">
                 <h2>In transit</h2>
                 <p id="transit"></p>
             </div>
@@ -34,6 +41,7 @@
     <script src="events.js"></script>
     <script src="money.js"></script>
     <script src="cities.js"></script>
+    <script src="add_cities.js"></script>
     <script src="passengers.js"></script>
     <script src="trains.js"></script>
 </html>

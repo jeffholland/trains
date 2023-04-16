@@ -282,7 +282,7 @@ const cities = [
 
 const createCity = (city) => {
     return `
-    <div class="city border-box">
+    <div class="city border-box" id="${city["name"]}">
         <h2>${city["name"]}</h2>
         <p>
             <button id="${city["name"]}AddTrain">Add train</button>

@@ -8,6 +8,10 @@ const addMoney = (amountToAdd) => {
 } 
 
 const subtractMoney = (amountToSubtract) => {
-    fundsAvailable -= amountToSubtract;
-    fundsAvailableElement.innerHTML = fundsAvailable;
+    if (fundsAvailable > amountToSubtract) {
+        fundsAvailable -= amountToSubtract;
+        fundsAvailableElement.innerHTML = fundsAvailable;
+    } else {
+        throw new Error("insufficient funds!");
+    }
 }
