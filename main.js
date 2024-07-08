@@ -1,4 +1,9 @@
-/* borrowed code for math purposes */
+/** 
+ * borrowed the following code 
+ * from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor 
+ * for math purposes 
+ */
+
 /**
  * Adjusts a number to the specified digit.
  *
@@ -35,11 +40,22 @@ const floor10 = (value, exp) => decimalAdjust("floor", value, exp);
 // Decimal ceil
 const ceil10 = (value, exp) => decimalAdjust("ceil", value, exp);
 
+/* end borrowed code */
 
-/* CLOCK.JS */
 
-// updateTime function runs on a loop
-// game events are scheduled according to the clock
+
+
+
+
+
+
+
+
+/* ======================================================== */
+/* ======================== CLOCK ========================= */
+/* ======================================================== */
+
+// HTML elements
 
 const clockElement = document.getElementById("clock");
 const dayCountElement = document.getElementById("dayCount");
@@ -47,21 +63,21 @@ const dayCountElement = document.getElementById("dayCount");
 let timeHours = 0;
 let timeMinutes = 0;
 let timeSeconds = 0;
-let timeSecondsFloat = 0.0; // seconds is always floored to an int
-// we don't need greater precision than that
+let timeSecondsFloat = 0.0;
 
-/* UPDATE: demand varies by time!
-   index is the time in hours (0 is midnight, 23 is 11pm)
-   value is the demand factor where 100 is the highest, 1 is the lowest.
-   roughly based on Google Maps data for Grand Central Station.
-*/
+/**
+ * demand varies by time
+ * index is the time in hours (0 is midnight, 23 is 11pm)
+ * value is the demand factor where 100 is the highest, 1 is the lowest.
+ * roughly based on Google Maps data for Grand Central Station.
+ */
 
 const timeDemandMap = [8,4,2,1,4,10,15,25,45,60,70,75,80,85,90,93,95,95,92,83,70,45,30,15]
 
-const frequency = 5; // update time interval fixed to 5 ms
-let secondInterval = frequency / 1000; // seconds that pass each time updateTime is called
+const frequency = 5; // default speed is 5 ms
+let secondInterval = frequency / 1000; // speed of game is set by this value
 
-let dayCount = 0;
+let dayCount = 0; // count the number of days since the start of the game
 
 const getTimeFmtStr = (hours, minutes, seconds) => {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
@@ -74,6 +90,10 @@ const setTime = () => {
 setTime();
 
 const updateTime = () => {
+    // this function is always called every 5 ms
+    // (the value of the const variable "frequency")
+
+    // update all time variables according to game speed
     timeSecondsFloat += secondInterval;
     timeSeconds = Math.floor(timeSecondsFloat);
 
@@ -91,11 +111,12 @@ const updateTime = () => {
         timeHours -= 24;
     }
 
+    // execute any events whose execution time has been reached
     checkForEvents();
     checkForRecurringEvents();
     setTime();
 
-    // update city demand (since it depends on the time of day now)
+    // update city demand (since it depends on the time of day)
     for (let i = 0; i < cities.length; i++) {
         updateDemand(i);
     }
@@ -128,8 +149,9 @@ setInterval(updateTime, frequency)
 
 
 
-
-/* EVENTS.JS */
+/* ======================================================== */
+/* ======================== EVENTS ======================== */
+/* ======================================================== */
 
 // To schedule something to happen, add an object to the events array
 // with the following object keys:
@@ -151,8 +173,6 @@ const checkForEvents = () => {
         }
     }
 }
-
-
 
 // To make an event happen on a recurring basis,
 // add an object to the recurringEvents array
@@ -181,34 +201,50 @@ const removeRecurringEvent = (id) => {
 
 
 
-/* CITIES.JS */
+/* ======================================================== */
+/* ======================== CITIES ======================== */
+/* ======================================================== */
 
 const leftColumnElement = document.getElementById("left-column");
+
+// The game contains 50 continental U.S. cities.
+// Not the 50 most populous, but chosen with the goal of maximum geographical representation.
+// They all contain VERY rough geographical coordinates,
+// and a population count copied from Wikipedia.
+// The coordinates are used to calculate how long the trains take 
+// to travel from one city to another.
+// Population is used to calculate ticket demand and station cost.
 
 const cities = [
     {
         "name": "New York",
         "x": 90,
         "y": 75,
-        "population": 8800000
+        "population": 8258035
     },
     {
         "name": "Boston",
         "x": 100,
         "y": 90,
-        "population": 654800
+        "population": 653833
+    },
+    {
+        "name": "Providence",
+        "x": 98,
+        "y": 88,
+        "population": 190792
     },
     {
         "name": "Philadelphia",
         "x": 85,
         "y": 70,
-        "population": 1600000
+        "population": 1550542
     },
     {
         "name": "Buffalo",
         "x": 81,
         "y": 91,
-        "population": 276807
+        "population": 274678
     },
     {
         "name": "Baltimore",
@@ -233,6 +269,12 @@ const cities = [
         "x": 78,
         "y": 35,
         "population": 879700
+    },
+    {
+        "name": "Charleston",
+        "x": 80,
+        "y": 30,
+        "population": 155369
     },
     {
         "name": "Atlanta",
@@ -334,7 +376,7 @@ const cities = [
         "name": "Wichita",
         "x": 53,
         "y": 40,
-        "population": 395699
+        "population": 396119
     },
     {
         "name": "Oklahoma City",
@@ -383,6 +425,12 @@ const cities = [
         "x": 50,
         "y": 10,
         "population": 1450000
+    },
+    {
+        "name": "El Paso",
+        "x": 28,
+        "y": 8,
+        "population": 678958
     },
     {
         "name": "Albuquerque",
@@ -445,6 +493,12 @@ const cities = [
         "population": 237446
     },
     {
+        "name": "Billings",
+        "x": 26,
+        "y": 90,
+        "population": 120864
+    },
+    {
         "name": "Portland",
         "x": 0,
         "y": 90,
@@ -493,8 +547,7 @@ const createCity = (city) => {
 }
 
 
-
-// create cities
+// all cities are created before game begins, with display initially hidden
 let text = "";
 
 for (let i = 0; i < cities.length; i++) {
@@ -503,31 +556,32 @@ for (let i = 0; i < cities.length; i++) {
 leftColumnElement.innerHTML = text;
 
 
-
 // formula for calculating demand based on ticket price
-
 const calculateDemand = (ticketPrice, cityPop) => {
-    // Demand is inversely proportional to ticket price
-    // set at a standard of $1 per ticket = 100% demand
     
-    // UPDATE: factor in city population
-    // New York's population is 200% demand at $1 per ticket,
-    // anything less than that gives less demand
-
+    // 1st factor: city population
+    // New York's population has the highest demand,
+    // anything less than that gives less demand.
     const newYorkPop = cities[0]["population"];
     const popFactor = cityPop / newYorkPop;
 
-    // UPDATE: factor in time of day
-    demandFactor = timeDemandMap[timeHours] / 50;
+    // 2nd factor: time of day
+    // Demand is mapped by hour,
+    // simulating when people are most likely to buy tickets.
+    const timeFactor = timeDemandMap[timeHours] / 50;
 
-    const result = (100 / ticketPrice) * popFactor * demandFactor;
+    // 3rd factor: ticket price
+    // Demand is inversely proportional to ticket price
+    // set at a standard of $1 per ticket = 100% demand
+    const priceFactor = 100 / ticketPrice;
 
+    // Calculate and return
+    const result = priceFactor * popFactor * timeFactor;
     return result;
 }
 
 
-
-// fill cities with info
+// initialize cities
 
 for (let i = 0; i < cities.length; i++) {
 
@@ -573,7 +627,9 @@ for (let i = 0; i < cities.length; i++) {
 
 
 
-/* ADD_CITIES.JS */
+/* ============================================================ */
+/* ======================== ADD CITIES ======================== */
+/* ============================================================ */
 
 const nextCityNameElement = document.getElementById("nextCityName");
 const nextCityCostElement = document.getElementById("nextCityCost");
@@ -629,7 +685,9 @@ addNextCityElement.onclick = function() {
 
 
 
-/* PASSENGERS.JS */
+/* ============================================================ */
+/* ======================== PASSENGERS ======================== */
+/* ============================================================ */
 
 const debug = true;
 let debugNow = false;
@@ -730,8 +788,9 @@ const subtractMoney = (amountToSubtract) => {
 
 
 
-
-/* TRAINS.JS */
+/* ======================================================== */
+/* ======================== TRAINS ======================== */
+/* ======================================================== */
 
 const trainCostGrowthRatio = 1.6;
 let trainCapacity = 200;
@@ -739,7 +798,6 @@ const trainCapacityElement = document.getElementById("trainCapacity");
 trainCapacityElement.innerHTML = trainCapacity;
 
 const transitElement = document.getElementById("transit");
-
 
 
 // utilities
@@ -833,13 +891,12 @@ const calculateDistance = (sourceIndex, destIndex) => {
     const destY = cities[destIndex]["y"];
 
     // Pythagorean theorem to get distance between cities
-    const distA = Math.abs(sourceX - destX);
-    const distB = Math.abs(sourceY - destY);
-    const distance = Math.pow(Math.pow(distA, 2) + Math.pow(distB, 2), 0.5)
+    const distX = Math.abs(sourceX - destX);
+    const distY = Math.abs(sourceY - destY);
+    const distance = Math.pow(Math.pow(distX, 2) + Math.pow(distY, 2), 0.5)
 
     return distance;
 }
-
 
 
 // add train
@@ -853,11 +910,11 @@ const addTrain = (index) => {
         return;
     }
 
-    // Cost of the train increases
+    // Cost of a new train in this city increases
     cities[index]["trainCost"] *= trainCostGrowthRatio;
     cities[index]["trainCostElement"].innerHTML = cities[index]["trainCost"]
 
-    // Add the train
+    // Add the train to the city
     cities[index]["numTrains"] += 1;
     cities[index]["numTrainsElement"].innerHTML = cities[index]["numTrains"]
 
@@ -865,131 +922,126 @@ const addTrain = (index) => {
 }
 
 
-
 // send train
 
+// counter to allow each train we send to have a unique identifying integer
 let tripIdCounter = 0;
 
+/**
+ * When we send a train, we create events for the train's departure and arrival,
+ * as well as a recurring event for passengers to buy tickets for the trip.
+ */
 const sendTrain = (sourceIndex, destIndex) => {
-
-    if (cities[sourceIndex]["selectStationElement"].options.length == 0) {
-        alert("No stations available")
-        return;
-    }
-
+    // Increment trip id counter which will be the train trip's unique identifier
     tripIdCounter++;
 
+    // When there is a train trip occurring, the transit box is visible
     const transitBoxElement = document.getElementById("transitBox");
     transitBoxElement.style.visibility = "visible";
 
-    const source = cities[sourceIndex]["name"];
-    const dest = cities[destIndex]["name"];
+    // Get departure and arrival times
+    const departureTimeStr = cities[sourceIndex]["sendTrainTimeElement"].value;
+    const departureTime = calculateDepartureTime(departureTimeStr);
+    const distance = calculateDistance(sourceIndex, destIndex);
+    const arrivalTime = calculateArrivalTime(departureTime, distance);
 
-    if (cities[sourceIndex]["numTrains"] > 0) {
+    // Remove the train from the city's pool of available trains
+    cities[sourceIndex]["numTrains"] -= 1;
+    cities[sourceIndex]["numTrainsElement"].innerHTML = cities[sourceIndex]["numTrains"]
 
-        const departureTimeStr = cities[sourceIndex]["sendTrainTimeElement"].value;
-        const departureTime = calculateDepartureTime(departureTimeStr);
-        const distance = calculateDistance(sourceIndex, destIndex);
-        const arrivalTime = calculateArrivalTime(departureTime, distance);
+    // Create and add the trip element to the transit box
+    const newChild = transitElement.appendChild(
+        document.createElement("p")
+    );
+    const sourceName = cities[sourceIndex]["name"];
+    const destName = cities[destIndex]["name"];
+    newChild.innerHTML = `
+        <strong> ${sourceName} -> ${destName} </strong><br/>
+        <strong> Status: </strong> <em><span id="tripStatus${tripIdCounter}"> Awaiting departure</span></em><br/>
+        <strong> Passengers: </strong> <span id="passengers${tripIdCounter}">0</span><br/>
+        <strong> Departure: </strong> day ${departureTime[0]} at ${getTimeFmtStr(departureTime[1], departureTime[2], departureTime[3])}<br/>
+        <strong> Arrival: </strong> day ${arrivalTime[0]} at ${getTimeFmtStr(arrivalTime[1], arrivalTime[2], arrivalTime[3])}
+    `;
+    const tripStatusElement = document.getElementById(`tripStatus${tripIdCounter}`);
+    const passengersElement = document.getElementById(`passengers${tripIdCounter}`)
 
-        cities[sourceIndex]["numTrains"] -= 1;
-        cities[sourceIndex]["numTrainsElement"].innerHTML = cities[sourceIndex]["numTrains"]
+    // Count the number of passengers for the trip
+    let passengers = 0;
+    let passengersFloat = 0.0;
 
-        const newChild = transitElement.appendChild(
-            document.createElement("p")
-        );
-        newChild.innerHTML = `
-            <strong> ${source} -> ${dest} </strong><br/>
-            <strong> Status: </strong> <em><span id="tripStatus${tripIdCounter}"> Awaiting departure</span></em><br/>
-            <strong> Passengers: </strong> <span id="passengers${tripIdCounter}">0</span><br/>
-            <strong> Departure: </strong> day ${departureTime[0]} at ${getTimeFmtStr(departureTime[1], departureTime[2], departureTime[3])}<br/>
-            <strong> Arrival: </strong> day ${arrivalTime[0]} at ${getTimeFmtStr(arrivalTime[1], arrivalTime[2], arrivalTime[3])}
-        `;
-        const tripStatusElement = document.getElementById(`tripStatus${tripIdCounter}`);
-        const passengersElement = document.getElementById(`passengers${tripIdCounter}`)
+    // Recurring event to increment the number of passengers little by little, based on demand
+    recurringEvents.push({
+        "id": tripIdCounter,
+        "execute": function() {
+            // if the train is at capacity, do nothing
+            if (passengers < trainCapacity) {
 
-        // push recurring event to add passengers
-        let passengers = 0;
-        let passengersFloat = 0.0;
+                // the function called below determines how much closer we are to a 
+                // passenger buying a ticket for this train.
+                passengersFloat += getPassengerIncrement(sourceIndex, destIndex, departureTime[1]);
+                const passengerChange = passengersFloat - passengers;
+                if (debugNow) {
+                    console.log(`passengers float: ${passengersFloat}`);
+                }
 
-        recurringEvents.push({
-            "id": tripIdCounter,
-            "execute": function() {
-                // if train is at capacity, this function does nothing
-                if (passengers < trainCapacity) {
-
-                    // the function called below determines how much closer we are to a 
-                    // passenger buying a ticket for this train.
-                    // factors include source and dest city populations as well as hour of departure time.
-
-                    passengersFloat += getPassengerIncrement(sourceIndex, destIndex, departureTime[1]);
-                    const passengerChange = passengersFloat - passengers;
-                    if (debugNow) {
-                        console.log(`passengers float: ${passengersFloat}`);
-                    }
-    
-                    // if we're adding a passenger,
-                    // then they've "bought a ticket", so we get money
-                    if (passengerChange >= 1) {
+                // if we're adding a passenger,
+                // then they've bought a ticket, so we get money
+                if (passengerChange >= 1) {
+                    if (debug) {
                         console.log(`Purchased 1 ticket at ${timeHours}:${timeMinutes}`)
-                        passengers = Math.floor(passengersFloat);
-                        passengersElement.innerHTML = passengers;
-    
-                        addMoney(cities[sourceIndex]["ticketPrice"]);
                     }
-                } else {
-                    if (tripStatusElement.innerHTML != "Capacity reached - Awaiting departure") {
-                        tripStatusElement.innerHTML = "Capacity reached - Awaiting departure";
-                    }
+                    passengers = Math.floor(passengersFloat);
+                    passengersElement.innerHTML = passengers;
+
+                    addMoney(cities[sourceIndex]["ticketPrice"]);
+                }
+            } else {
+                if (tripStatusElement.innerHTML != "Capacity reached - Awaiting departure") {
+                    tripStatusElement.innerHTML = "Capacity reached - Awaiting departure";
                 }
             }
-        })
+        }
+    })
 
-        // push departure event
-        events.push({
-            "days": departureTime[0],
-            "hours": departureTime[1],
-            "minutes": departureTime[2],
-            "seconds": departureTime[3],
-            "id": tripIdCounter,
-            "execute": function() {
-                removeRecurringEvent(this["id"]);
-                tripStatusElement.innerHTML = "Departed";
-            }
-        })
+    // push departure event
+    events.push({
+        "days": departureTime[0],
+        "hours": departureTime[1],
+        "minutes": departureTime[2],
+        "seconds": departureTime[3],
+        "id": tripIdCounter,
+        "execute": function() {
+            removeRecurringEvent(this["id"]);
+            tripStatusElement.innerHTML = "Departed";
+        }
+    })
 
-        // push arrival event
-        events.push({
-            "days": arrivalTime[0],
-            "hours": arrivalTime[1],
-            "minutes": arrivalTime[2],
-            "seconds": arrivalTime[3],
-            "execute": function() {
-                cities[destIndex]["numTrains"] += 1;
-                cities[destIndex]["numTrainsElement"].innerHTML = cities[destIndex]["numTrains"]
+    // push arrival event
+    events.push({
+        "days": arrivalTime[0],
+        "hours": arrivalTime[1],
+        "minutes": arrivalTime[2],
+        "seconds": arrivalTime[3],
+        "execute": function() {
+            cities[destIndex]["numTrains"] += 1;
+            cities[destIndex]["numTrainsElement"].innerHTML = cities[destIndex]["numTrains"]
 
-                tripStatusElement.innerHTML = "Arrived"
-                checkButtons();
+            tripStatusElement.innerHTML = "Arrived"
+            checkButtons();
 
-                // After arrival, remove event after timeout
-                setTimeout(() => {
-                    transitElement.removeChild(newChild);
-                    if (transitElement.children.length == 0) {
-                        transitBoxElement.style.visibility = "hidden";
-                    }
-                }, 4000);
-            }
-        });
-
-    } else {
-        alert(`No trains available in ${source} to send`)
-    }
+            // After arrival, remove trip from transit box after timeout
+            setTimeout(() => {
+                transitElement.removeChild(newChild);
+                if (transitElement.children.length == 0) {
+                    transitBoxElement.style.visibility = "hidden";
+                }
+            }, 4000);
+        }
+    });
 }
 
 
-
-// add train functionality to cities
-
+// add train functionality to all cities
 for (let i = 0; i < cities.length; i++) {
 
     cities[i]["addTrainsElement"].addEventListener('click', function(){
