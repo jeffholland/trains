@@ -101,16 +101,10 @@ const sendTrain = (sourceIndex, destIndex) => {
                 // passenger buying a ticket for this train.
                 passengersFloat += getPassengerIncrement(sourceIndex, destIndex, departureTime[1]);
                 const passengerChange = passengersFloat - passengers;
-                if (debugNow) {
-                    console.log(`passengers float: ${passengersFloat}`);
-                }
 
                 // if we're adding a passenger,
                 // then they've bought a ticket, so we get money
                 if (passengerChange >= 1) {
-                    if (debug) {
-                        console.log(`Purchased 1 ticket at ${timeHours}:${timeMinutes}`)
-                    }
                     passengers = Math.floor(passengersFloat);
                     passengersElement.innerHTML = passengers;
 
