@@ -80,6 +80,16 @@ const sendTrain = (sourceIndex, destIndex) => {
     let passengers = 0;
     let passengersFloat = 0.0;
 
+    // add trip to city's trips in transit
+    cities[sourceIndex]["tripsScheduled"].push({
+        "destination": destName,
+        "days": departureTime[0],
+        "hours": departureTime[1],
+        "minutes": departureTime[2],
+        "seconds": departureTime[3],
+        "id": tripIdCounter
+    });
+
     // Recurring event to increment the number of passengers little by little, based on demand
     recurringEvents.push({
         "id": tripIdCounter,
@@ -124,6 +134,12 @@ const sendTrain = (sourceIndex, destIndex) => {
         "execute": function() {
             removeRecurringEvent(this["id"]);
             tripStatusElement.innerHTML = "Departed";
+
+            for (let i = 0; i < cities[sourceIndex]["tripsScheduled"].length; i++) {
+                if (this["id"] == cities[sourceIndex]["tripsScheduled"][i]["id"]) {
+                    cities[sourceIndex]["tripsScheduled"].splice(i);
+                }
+            }
         }
     })
 

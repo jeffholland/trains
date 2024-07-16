@@ -353,31 +353,6 @@ for (let i = 0; i < cities.length; i++) {
 leftColumnElement.innerHTML = text;
 
 
-// formula for calculating demand based on ticket price
-const calculateDemand = (ticketPrice, cityPop) => {
-    
-    // 1st factor: city population
-    // New York's population has the highest demand,
-    // anything less than that gives less demand.
-    const newYorkPop = cities[0]["population"];
-    const popFactor = cityPop / newYorkPop;
-
-    // 2nd factor: time of day
-    // Demand is mapped by hour,
-    // simulating when people are most likely to buy tickets.
-    const timeFactor = timeDemandMap[timeHours] / 50;
-
-    // 3rd factor: ticket price
-    // Demand is inversely proportional to ticket price
-    // set at a standard of $1 per ticket = 100% demand
-    const priceFactor = 100 / ticketPrice;
-
-    // Calculate and return
-    const result = priceFactor * popFactor * timeFactor;
-    return result;
-}
-
-
 // initialize cities
 
 for (let i = 0; i < cities.length; i++) {
@@ -418,4 +393,7 @@ for (let i = 0; i < cities.length; i++) {
     cities[i]["numTrains"] = 0;
     cities[i]["numTrainsElement"] = document.getElementById(cities[i]["name"] + "NumTrains");
     cities[i]["numTrainsElement"].innerHTML = cities[i]["numTrains"];
+
+    // for tracking how many trains are going from each city
+    cities[i]["tripsScheduled"] = []
 }

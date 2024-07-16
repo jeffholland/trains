@@ -69,12 +69,6 @@ const updateTime = () => {
     }
 }
 
-const updateDemand = (i) => {
-    // encapsulate demand update to a function
-    cities[i]["demand"] = calculateDemand(cities[i]["ticketPrice"], cities[i]["population"])
-    cities[i]["demandElement"].innerHTML = floor10(cities[i]["demand"], -2);
-}
-
 /* clock speed */
 
 const speedSliderElement = document.getElementById("speedSlider");
