@@ -2,11 +2,6 @@
 /* ======================== PASSENGERS ======================== */
 /* ============================================================ */
 
-const debug = true;
-let debugNow = false;
-let debugIncrement = 0;
-const debugLimit = 1000;
-
 const getPassengerIncrement = (sourceIndex, destIndex, departureHour) => {
     let increment = 0;
 
@@ -36,23 +31,6 @@ const getPassengerIncrement = (sourceIndex, destIndex, departureHour) => {
 
     // make sure we're incrementing at the correct speed
     increment *= secondInterval;
-    
-    // debug code
-    debugIncrement++;
-    if (debugIncrement >= debugLimit){
-        debugNow = true;
-    } else {
-        debugNow = false;
-    }
-
-    if (debug && debugNow) {
-        console.log(`sourceDemandInc: ${sourceDemandInc}`);
-        console.log(`destDemandInc: ${destDemandInc}`);
-        console.log(`departureTimeInc: ${departureTimeInc}`);
-        console.log(`increment: ${increment}`);
-        console.log(`secondInterval: ${secondInterval}`)
-        debugIncrement = 0;
-    }
 
     return increment;
 }
